@@ -18,7 +18,7 @@ The source data is `GuttmacherInstituteAbortionDataByState.xlsx` from the Guttma
 1. **Converted to CSV** We exported only the main data sheet, since the visualization does not use the metadata notes.
 2. **Kept 10 of the 31 columns** We kept the columns that measure access and incidence and dropped the rest (public funding from 2010 and 2015, provider counts from 2014 and 2017, teen age-group breakdowns other than ages 15-19, the share of all U.S. abortions, and the % change in abortion rate). We may add some of these back in later versions.
 3. **Renamed columns** We replaced the long original names with short names that are easier to use in code (see the table below).
-4. **Added one calculated column, `net_patients`** It equals abortions by state of occurrence minus abortions by state of residence (2020). A positive value means the state provided more abortions than its own residents obtained, so it took in patients from other states. A negative value means residents obtained care elsewhere.
+4. **Added one calculated column: `net_patients`** It equals abortions by state of occurrence minus abortions by state of residence (2020). A positive value means the state provided more abortions than its own residents obtained, so it took in patients from other states. A negative value means residents obtained care elsewhere.
 
 We did not change, round, or fill in any values. All 51 rows have values for every column we kept.
 
