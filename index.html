@@ -16,7 +16,17 @@
 
     <main>
         <section class="viz">
-            <div class="controls">
+            <div id="story" class="story">
+                <p id="story-step" class="story-step"></p>
+                <h2 id="story-title"></h2>
+                <p id="story-text"></p>
+                <div class="story-nav">
+                    <button id="story-back" type="button">Back</button>
+                    <div id="story-dots" class="story-dots" aria-hidden="true"></div>
+                    <button id="story-next" type="button">Next</button>
+                </div>
+            </div>
+            <div id="explore-controls" class="controls">
                 <label for="measure-select">Show</label>
                 <select id="measure-select"></select>
             </div>
@@ -30,6 +40,7 @@
                 <div class="panel">
                     <h2 id="bar-title" class="panel-title"></h2>
                     <div id="bars"></div>
+                    <div id="scatter"></div>
                 </div>
             </div>
             <p class="note">Hover over a state on the map or in the ranking for its values. Click a state to keep it highlighted in both views, and click it again to clear.</p>
@@ -38,7 +49,7 @@
         <section class="writeup">
             <h2>What we have done so far</h2>
             <p>We have chosen the Guttmacher Institute dataset about abortion access across the U.S. by exporting it into a CSV file. We also added a new variable, calculated by abortions provided minus residents' abortions, to show which states took in patients from other states and which sent patients out. We created several initial visualizations, including charts about abortion counts, abortion rates, out-of-state travel, clinic availability, and clinic count changes. We made this an interactive USA map colored by the selected measure, tied to a ranked bar chart by each state for that measure. We have a dropdown menu, tooltips, and click to select working.</p>
-            
+
             <h2>What will be the most challenging</h2>
             <p>The most challenging part of this project will be designing a clear story from measures that do not all describe the same thing. Some variables describe where abortions occurred, while others describe where patients lived, how many clinics existed, or whether residents traveled out of state for care. Because these measures use different units (counts, rates, percentages) and come from different years, we need to label each one clearly so readers know which ones can be compared directly versus not. Another challenge is showing cross-state travel when the data only gives state totals, not where patients actually went, so we have to describe patterns carefully without claiming more than the data shows.</p>
         </section>
