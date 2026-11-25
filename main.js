@@ -1,7 +1,14 @@
-// Abortion access across US states initial prototype
+// Abortion access across U.S. states
 // A choropleth map and a ranked bar chart, linked by hover and click, both driven by one selected measure
 
 const MEASURES = [
+    {
+        key: "abortions_occurrence",
+        label: "Abortions provided in the state (2020)",
+        note: "Number of abortions provided in each state, counted by state of occurrence.",
+        format: d => d3.format(",")(d),
+        scale: "sequential"
+    },
     {
         key: "travel_out_pct",
         label: "Residents who traveled out of state for care (2020)",
@@ -75,7 +82,8 @@ const STATE_ABBR = {
 };
 
 const tooltip = d3.select("#tooltip");
-let current = MEASURES[0];
+let current = MEASURES[1];
+let storyStates = [];
 let pinned = null;
 let hovered = null;
 
@@ -111,7 +119,7 @@ Promise.all([
         .attr("fill", "url(#legend-gradient)");
     const legAxis = legSvg.append("g").attr("class", "axis").attr("transform", "translate(0,20)");
 
-    // Ranked bars 
+    // Ranked bars
     const barW = 420, rowH = 14, barMargin = { top: 18, right: 56, bottom: 8, left: 112 };
     const barH = barMargin.top + rows.length * rowH + barMargin.bottom;
     const barSvg = d3.select("#bars").append("svg")
@@ -123,17 +131,76 @@ Promise.all([
     const xAxisG = barG.append("g").attr("class", "axis");
     const zeroLine = barG.append("line").attr("stroke", "#8b949e");
 
-    // Interaction helpers
-    function focusState() { return hovered || pinned; }
+    // Scatter (story steps)
+    const scW = 420, scH = 380, scM = { top: 22, right: 24, bottom: 44, left: 48 };
+    const scatterSvg = d3.select("#scatter").append("svg").attr("viewBox", `0 0 ${scW} ${scH}`);
+    const scatterG = scatterSvg.append("g").attr("transform", `translate(${scM.left},${scM.top})`);
+    const scIW = scW - scM.left - scM.right, scIH = scH - scM.top - scM.bottom;
+    const sx = d3.scaleLinear([0, 100], [0, scIW]);
+    const sy = d3.scaleLinear([0, 100], [scIH, 0]);
+    let scatterX = "women_no_clinic_pct", scatterY = "travel_out_pct";
+    const sxAxis = scatterG.append("g").attr("class", "axis").attr("transform", `translate(0,${scIH})`);
+    const syAxis = scatterG.append("g").attr("class", "axis");
+    const sxTitle = scatterG.append("text").attr("class", "axis-title").attr("x", scIW / 2).attr("y", scIH + 36).attr("text-anchor", "middle");
+    const syTitle = scatterG.append("text").attr("class", "axis-title").attr("transform", "rotate(-90)").attr("x", -scIH / 2).attr("y", -36).attr("text-anchor", "middle");
+    const fitNote = scatterG.append("text").attr("class", "fit-note").attr("x", 4).attr("y", -4);
 
+    function drawScatter(xKey, yKey, xLabel, yLabel) {
+        scatterX = xKey; scatterY = yKey;
+        sx.domain([0, d3.max(rows, d => d[xKey])]).nice();
+        sy.domain([0, d3.max(rows, d => d[yKey])]).nice();
+        sxAxis.call(d3.axisBottom(sx).ticks(5));
+        syAxis.call(d3.axisLeft(sy).ticks(5));
+        sxTitle.text(xLabel); syTitle.text(yLabel);
+        const r = d3.format(".2f")(sampleCorr(rows.map(d => d[xKey]), rows.map(d => d[yKey])));
+        fitNote.text("Correlation across 51 states: " + r);
+        scatterG.selectAll(".dot").data(rows, d => d.state).join("circle")
+            .attr("class", "dot").attr("r", 5)
+            .on("pointermove", (event, d) => hover(d.state, event))
+            .on("pointerleave", unhover)
+            .on("click", (event, d) => togglePin(d.state))
+            .transition().duration(500)
+            .attr("cx", d => sx(d[xKey])).attr("cy", d => sy(d[yKey]));
+    }
+
+    function sampleCorr(a, b) {
+        const ma = d3.mean(a), mb = d3.mean(b);
+        let num = 0, da = 0, db = 0;
+        a.forEach((v, i) => { num += (v - ma) * (b[i] - mb); da += (v - ma) ** 2; db += (b[i] - mb) ** 2; });
+        return num / Math.sqrt(da * db);
+    }
+
+    // Interaction helpers 
+    function focusSet() {
+        if (hovered) return new Set([hovered]);
+        if (pinned) return new Set([pinned]);
+        return new Set(storyStates);
+    }
+
+    const labelG = mapSvg.append("g");
     function applyFocus() {
-        const focus = focusState();
-        mapG.classed("has-focus", focus !== null);
-        barG.classed("has-focus", focus !== null);
-        statePaths.classed("is-focus", d => d.properties.name === focus);
-        barG.selectAll(".bar").classed("is-focus", d => d.state === focus);
-        barG.selectAll(".bar-label").classed("is-focus", d => d.state === focus);
-        if (focus) statePaths.filter(d => d.properties.name === focus).raise();
+        const focus = focusSet();
+        const on = focus.size > 0;
+        mapG.classed("has-focus", on);
+        barG.classed("has-focus", on);
+        scatterG.classed("has-focus", on);
+        statePaths.classed("is-focus", d => focus.has(d.properties.name));
+        barG.selectAll(".bar").classed("is-focus", d => focus.has(d.state));
+        barG.selectAll(".bar-label").classed("is-focus", d => focus.has(d.state));
+        scatterG.selectAll(".dot").classed("is-focus", d => focus.has(d.state));
+        statePaths.filter(d => focus.has(d.properties.name)).raise();
+        // Name labels on the map for the featured states
+        const feats = states.filter(f => focus.has(f.properties.name) && path.centroid(f)[0]);
+        labelG.selectAll("text").data(feats, f => f.properties.name).join("text")
+            .attr("class", "map-label").attr("text-anchor", "middle")
+            .attr("x", f => path.centroid(f)[0]).attr("y", f => path.centroid(f)[1] + 4)
+            .text(f => STATE_ABBR[f.properties.name]);
+        scatterG.selectAll(".dot-label").data(rows.filter(d => focus.has(d.state)), d => d.state).join("text")
+            .attr("class", "dot-label")
+            .attr("text-anchor", d => sx(d[scatterX]) > scIW * 0.7 ? "end" : "start")
+            .attr("x", d => sx(d[scatterX]) + (sx(d[scatterX]) > scIW * 0.7 ? -8 : 8))
+            .attr("y", d => sy(d[scatterY]) + 4)
+            .text(d => d.state);
     }
 
     function showTooltip(name, event) {
@@ -163,7 +230,7 @@ Promise.all([
         .on("pointerleave", unhover)
         .on("click", (event, d) => togglePin(d.properties.name));
 
-    // Update for the selected measure 
+    // Update for the selected measure
     function update() {
         const values = rows.map(d => d[current.key]);
         let color;
@@ -184,7 +251,7 @@ Promise.all([
             .attr("offset", t => t * 100 + "%")
             .attr("stop-color", t => color(lo + t * (hi - lo)));
         const legScale = d3.scaleLinear([lo, hi], [10, 310]);
-        legAxis.call(d3.axisBottom(legScale).ticks(5).tickSize(4).tickFormat(current.format))
+        legAxis.call(d3.axisBottom(legScale).ticks(5).tickSize(4).tickFormat(Math.max(Math.abs(lo), Math.abs(hi)) >= 20000 ? d3.format("~s") : current.format))
             .call(g => g.select(".domain").remove());
 
         // Bars
@@ -242,7 +309,56 @@ Promise.all([
         .attr("value", d => d.key)
         .text(d => d.label);
 
-    update();
+    // Guided story
+    const STEPS = [
+        { title: "Counts tell a misleading story", measure: "abortions_occurrence", view: "bars", states: ["California", "New York"],
+          text: "California (154,060) and New York (110,360) provided the most abortions in 2020, but mostly because they have the most people. To understand access, we need to look beyond raw counts." },
+        { title: "Clinic deserts", measure: "women_no_clinic_pct", view: "bars", states: ["Wyoming", "Missouri", "Mississippi", "West Virginia"],
+          text: "In 2020, six states had only one abortion clinic. In Wyoming and Missouri, 96% and 94% of women aged 15-44 lived in a county with no clinic." },
+        { title: "No clinic nearby, so residents travel", measure: "travel_out_pct", view: "scatter", x: "women_no_clinic_pct", y: "travel_out_pct",
+          xLabel: "% of women in a county without a clinic", yLabel: "% of residents who traveled out of state",
+          states: ["Missouri", "Wyoming", "South Dakota"],
+          text: "States where more women lived far from a clinic also had more residents leaving the state for care. In Missouri, 99% of residents who obtained an abortion went to another state." },
+        { title: "Where the patients went", measure: "net_patients", view: "bars", states: ["Illinois", "Missouri"],
+          text: "Illinois provided 10,530 more abortions than its own residents obtained, while Missouri provided 11,540 fewer. The data does not track individual patients, but the two states are neighbors." },
+        { title: "Less access, lower rates", measure: "rate_residence", view: "scatter", x: "women_no_clinic_pct", y: "rate_residence",
+          xLabel: "% of women in a county without a clinic", yLabel: "Abortions per 1,000 women (by residence)",
+          states: ["Wyoming", "New Jersey"],
+          text: "States with fewer nearby clinics also had lower abortion rates among their residents. Wyoming had a rate of 6.4 per 1,000 women, compared with 28.9 in New Jersey." },
+        { title: "Explore on your own", measure: null, view: "bars", states: [],
+          text: "Choose any measure below to compare all 50 states and D.C. Hover over a state for its values, and click to keep it highlighted." }
+    ];
+    let step = 0;
+    d3.select("#story-dots").selectAll("span").data(STEPS).join("span");
+
+    function showStep(i) {
+        step = i;
+        const st = STEPS[i];
+        pinned = null;
+        storyStates = st.states;
+        if (st.measure) current = MEASURES.find(m => m.key === st.measure);
+        d3.select("#measure-select").property("value", current.key);
+        d3.select("#story-step").text(`Step ${i + 1} of ${STEPS.length}`);
+        d3.select("#story-title").text(st.title);
+        d3.select("#story-text").text(st.text);
+        d3.select("#story-back").property("disabled", i === 0);
+        d3.select("#story-next").property("disabled", i === STEPS.length - 1);
+        d3.select("#story-dots").selectAll("span").classed("active", (d, j) => j === i);
+        d3.select("#explore-controls").style("display", st.measure ? "none" : null);
+        d3.select("#bars").style("display", st.view === "bars" ? null : "none");
+        d3.select("#scatter").style("display", st.view === "scatter" ? null : "none");
+        update();
+        if (st.view === "scatter") {
+            drawScatter(st.x, st.y, st.xLabel, st.yLabel);
+            d3.select("#bar-title").text(st.yLabel + " vs. " + st.xLabel.toLowerCase());
+        }
+        applyFocus();
+    }
+    d3.select("#story-back").on("click", () => showStep(Math.max(0, step - 1)));
+    d3.select("#story-next").on("click", () => showStep(Math.min(STEPS.length - 1, step + 1)));
+
+    drawScatter("women_no_clinic_pct", "travel_out_pct", "", "");
+    showStep(0);
 }).catch(error => {
     console.error(error);
     d3.select("#measure-note").text("The visualization could not load. Open the page through a web server so the CSV can be read.");
