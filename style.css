@@ -128,8 +128,9 @@ select {
 .tooltip.visible { opacity: 1; }
 .tooltip strong { display: block; font-size: 15px; }
 
-.writeup { max-width: 820px; margin: 40px 0; }
-.writeup h2 { font-size: 22px; margin-bottom: 6px; }
+.hook { max-width: 820px; margin: 0 0 10px; font-size: 20px; font-weight: 600; line-height: 1.4; }
+.takeaway { max-width: 820px; margin: 40px 0; }
+.takeaway h2 { font-size: 22px; margin-bottom: 6px; }
 
 footer { color: var(--muted); font-size: 13px; padding-bottom: 40px; }
 
@@ -150,7 +151,7 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 40px; }
 }
 .story-step { margin: 0; color: var(--accent); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
 .story h2 { margin: 4px 0 6px; font-size: 22px; }
-.story p#story-text { margin: 0 0 12px; max-width: 780px; font-size: 16px; }
+.story p#story-text { margin: 0 0 8px; max-width: 780px; font-size: 16px; }
 .story-nav { display: flex; align-items: center; gap: 12px; }
 .story-nav button {
     min-height: 40px; padding: 6px 18px; border-radius: 6px; font: inherit; cursor: pointer;
@@ -168,3 +169,13 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 40px; }
 .dot-label { font-size: 12px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: white; stroke-width: 3px; pointer-events: none; }
 .axis-title { font-size: 12px; fill: var(--muted); }
 .fit-note { font-size: 12px; fill: var(--muted); }
+
+.story-why {
+    margin: 0 0 12px;
+    max-width: 780px;
+    padding-left: 12px;
+    border-left: 3px solid var(--accent);
+    color: #34424e;
+    font-size: 15px;
+}
+.story-why strong { color: var(--accent); }
