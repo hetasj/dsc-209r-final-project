@@ -11,6 +11,7 @@
         <p class="eyebrow">DSC 209R Final Project</p>
         <h1>Abortion Access and Travel Across U.S. States</h1>
         <p class="byline">Heta Joshi and Jade Romero</p>
+        <p class="hook">In 2020, abortion was legal in every U.S. state. But in Missouri, 99% of residents who obtained an abortion had to leave the state to get one.</p>
         <p class="question"><strong>Research question:</strong> How did access to abortion care differ across U.S. states before the Dobbs decision, and do high abortion counts tell the same story as access measures such as clinic availability and out-of-state travel?</p>
     </header>
 
@@ -20,6 +21,7 @@
                 <p id="story-step" class="story-step"></p>
                 <h2 id="story-title"></h2>
                 <p id="story-text"></p>
+                <p id="story-why" class="story-why"></p>
                 <div class="story-nav">
                     <button id="story-back" type="button">Back</button>
                     <div id="story-dots" class="story-dots" aria-hidden="true"></div>
@@ -46,12 +48,10 @@
             <p class="note">Hover over a state on the map or in the ranking for its values. Click a state to keep it highlighted in both views, and click it again to clear.</p>
         </section>
 
-        <section class="writeup">
-            <h2>What we have done so far</h2>
-            <p>We have chosen the Guttmacher Institute dataset about abortion access across the U.S. by exporting it into a CSV file. We also added a new variable, calculated by abortions provided minus residents' abortions, to show which states took in patients from other states and which sent patients out. We created several initial visualizations, including charts about abortion counts, abortion rates, out-of-state travel, clinic availability, and clinic count changes. We made this an interactive USA map colored by the selected measure, tied to a ranked bar chart by each state for that measure. We have a dropdown menu, tooltips, and click to select working.</p>
-
-            <h2>What will be the most challenging</h2>
-            <p>The most challenging part of this project will be designing a clear story from measures that do not all describe the same thing. Some variables describe where abortions occurred, while others describe where patients lived, how many clinics existed, or whether residents traveled out of state for care. Because these measures use different units (counts, rates, percentages) and come from different years, we need to label each one clearly so readers know which ones can be compared directly versus not. Another challenge is showing cross-state travel when the data only gives state totals, not where patients actually went, so we have to describe patterns carefully without claiming more than the data shows.</p>
+        <section class="takeaway">
+            <h2>Takeaway: legal did not mean accessible</h2>
+            <p>Before the Dobbs decision, abortion was legal in every state, and states that provided the most abortions, like California and New York, did so largely because of their population. But access was very uneven: in states like Wyoming and Missouri, more than 9 in 10 women lived in a county with no clinic. Therefore, many residents of those states crossed state lines for care, while neighboring states like Illinois took in thousands of patients.</p>
+            <p>Raw counts hide this pattern. Linking the map to the ranking and the scatter plots shows that the states with the fewest nearby clinics are the same states where residents most often traveled out of state and where abortion rates among residents were lowest. These are associations across 51 states, not proof of cause, and the data does not track where individual patients went.</p>
         </section>
     </main>
 
