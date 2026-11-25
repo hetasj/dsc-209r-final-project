@@ -1,6 +1,6 @@
 # Abortion Access and Travel Across U.S. States
 
-DSC 209R Final Project by Heta Joshi and Jade Romero.
+DSC 209R Final Project by Heta Joshi and Jade Romero
 
 An interactive D3.js visualization of how access to abortion care differed across U.S. states before the 2022 Dobbs decision, using the Guttmacher Institute's state-level data.
 
@@ -15,10 +15,10 @@ An interactive D3.js visualization of how access to abortion care differed acros
 
 The source data is `GuttmacherInstituteAbortionDataByState.xlsx` from the Guttmacher Institute, provided by the course. The original workbook has 51 rows (the 50 states and D.C.) and 31 columns, plus a metadata sheet of notes. We made `abortion_access_by_state.csv` from it with these changes:
 
-1. **Converted to CSV** We exported only the main data sheet, since the visualization does not use the metadata notes.
-2. **Kept 10 of the 31 columns** We kept the columns that measure access and incidence and dropped the rest (public funding from 2010 and 2015, provider counts from 2014 and 2017, teen age-group breakdowns other than ages 15-19, the share of all U.S. abortions, and the % change in abortion rate). We may add some of these back in later versions.
-3. **Renamed columns** We replaced the long original names with short names that are easier to use in code (see the table below).
-4. **Added one calculated column: `net_patients`** It equals abortions by state of occurrence minus abortions by state of residence (2020). A positive value means the state provided more abortions than its own residents obtained, so it took in patients from other states. A negative value means residents obtained care elsewhere.
+1. **Converted to CSV.** We exported only the main data sheet, since the visualization does not use the metadata notes.
+2. **Kept 10 of the 31 columns.** We kept the columns that measure access and incidence and dropped the rest (public funding from 2010 and 2015, provider counts from 2014 and 2017, teen age-group breakdowns other than ages 15-19, the share of all U.S. abortions, and the % change in abortion rate). We may add some of these back in later versions.
+3. **Renamed columns.** We replaced the long original names with short names that are easier to use in code (see the table below).
+4. **Added one calculated column, `net_patients`.** It equals abortions by state of occurrence minus abortions by state of residence (2020). A positive value means the state provided more abortions than its own residents obtained, so it took in patients from other states. A negative value means residents obtained care elsewhere.
 
 We did not change, round, or fill in any values. All 51 rows have values for every column we kept.
 
@@ -41,7 +41,9 @@ Note that the measures come from different years (2017 and 2020), and all of the
 
 ## Features so far
 
-- A measure menu with eight access measures (out-of-state travel, clinic deserts, net patients, rates, clinic changes, teen rates)
+- A six-step guided story (Back and Next buttons) that walks through the main findings: raw counts, clinic deserts, clinics vs. out-of-state travel, which states took in or sent out patients, and clinics vs. abortion rates
+- A scatter plot used in the story steps, showing each state and the correlation across all 51
+- A measure menu with nine measures (abortions provided, out-of-state travel, clinic deserts, net patients, rates, clinic changes, teen rates) for free exploration in the last step
 - A U.S. map colored by the selected measure, with a legend
 - A ranked bar chart of all 50 states and D.C., linked to the map
 - Hover tooltips with value and rank, and click-to-highlight in both views
