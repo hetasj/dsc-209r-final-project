@@ -139,3 +139,32 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 40px; }
     .viz { padding: 16px; }
     h1 { font-size: 28px; }
 }
+
+/* Guided story */
+.story {
+    margin-bottom: 16px;
+    padding: 16px 20px;
+    background: #f4f8f7;
+    border: 1px solid #d6e6e3;
+    border-radius: 10px;
+}
+.story-step { margin: 0; color: var(--accent); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.story h2 { margin: 4px 0 6px; font-size: 22px; }
+.story p#story-text { margin: 0 0 12px; max-width: 780px; font-size: 16px; }
+.story-nav { display: flex; align-items: center; gap: 12px; }
+.story-nav button {
+    min-height: 40px; padding: 6px 18px; border-radius: 6px; font: inherit; cursor: pointer;
+    border: 1px solid var(--accent); background: white; color: var(--accent);
+}
+.story-nav #story-next { background: var(--accent); color: white; }
+.story-nav button:disabled { opacity: 0.4; cursor: default; }
+.story-dots { display: flex; gap: 6px; }
+.story-dots span { width: 10px; height: 10px; border-radius: 50%; background: #c9d8d5; }
+.story-dots span.active { background: var(--accent); }
+.map-label { font-size: 12px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: white; stroke-width: 3px; pointer-events: none; }
+.dot { fill: var(--accent); fill-opacity: 0.6; stroke: white; cursor: pointer; }
+.dot.is-focus { fill: #b4462c; fill-opacity: 1; stroke: var(--ink); stroke-width: 1.5; }
+.has-focus .dot:not(.is-focus) { fill-opacity: 0.25; }
+.dot-label { font-size: 12px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: white; stroke-width: 3px; pointer-events: none; }
+.axis-title { font-size: 12px; fill: var(--muted); }
+.fit-note { font-size: 12px; fill: var(--muted); }
