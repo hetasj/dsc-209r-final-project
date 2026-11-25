@@ -170,7 +170,7 @@ Promise.all([
         return num / Math.sqrt(da * db);
     }
 
-    // Interaction helpers 
+    // Interaction helpers
     function focusSet() {
         if (hovered) return new Set([hovered]);
         if (pinned) return new Set([pinned]);
@@ -189,7 +189,7 @@ Promise.all([
         barG.selectAll(".bar-label").classed("is-focus", d => focus.has(d.state));
         scatterG.selectAll(".dot").classed("is-focus", d => focus.has(d.state));
         statePaths.filter(d => focus.has(d.properties.name)).raise();
-        // Name labels on the map for the featured states
+        // Name labels on the map for the featured states.
         const feats = states.filter(f => focus.has(f.properties.name) && path.centroid(f)[0]);
         labelG.selectAll("text").data(feats, f => f.properties.name).join("text")
             .attr("class", "map-label").attr("text-anchor", "middle")
@@ -311,21 +311,21 @@ Promise.all([
 
     // Guided story
     const STEPS = [
-        { title: "Counts tell a misleading story", measure: "abortions_occurrence", view: "bars", states: ["California", "New York"],
+        { title: "Counts tell a misleading story", why: "A state can rank near the top just by being large, so counts alone make big states look like the center of the story and hide problems in small states. The rest of this story uses shares and rates instead, so states of different sizes can be compared fairly.", measure: "abortions_occurrence", view: "bars", states: ["California", "New York"],
           text: "California (154,060) and New York (110,360) provided the most abortions in 2020, but mostly because they have the most people. To understand access, we need to look beyond raw counts." },
-        { title: "Clinic deserts", measure: "women_no_clinic_pct", view: "bars", states: ["Wyoming", "Missouri", "Mississippi", "West Virginia"],
+        { title: "Clinic deserts", why: "When almost every county in a state has no clinic, getting care usually means a long drive, which adds travel costs, time off work, and arranging childcare. In six states, a single clinic served the entire state.", measure: "women_no_clinic_pct", view: "bars", states: ["Wyoming", "Missouri", "Mississippi", "West Virginia"],
           text: "In 2020, six states had only one abortion clinic. In Wyoming and Missouri, 96% and 94% of women aged 15-44 lived in a county with no clinic." },
-        { title: "No clinic nearby, so residents travel", measure: "travel_out_pct", view: "scatter", x: "women_no_clinic_pct", y: "travel_out_pct",
+        { title: "No clinic nearby, so residents travel", why: "This connects the clinic gap to what residents actually did. In states where clinics were scarce, getting care often meant leaving the state entirely, adding more distance, cost, and planning on top of the in-state barriers.", measure: "travel_out_pct", view: "scatter", x: "women_no_clinic_pct", y: "travel_out_pct",
           xLabel: "% of women in a county without a clinic", yLabel: "% of residents who traveled out of state",
           states: ["Missouri", "Wyoming", "South Dakota"],
           text: "States where more women lived far from a clinic also had more residents leaving the state for care. In Missouri, 99% of residents who obtained an abortion went to another state." },
-        { title: "Where the patients went", measure: "net_patients", view: "bars", states: ["Illinois", "Missouri"],
+        { title: "Where the patients went", why: "Access in one state depends on its neighbors. When a state has few clinics, nearby states take in the demand, so a low count in a state like Missouri does not mean its residents did not need care.", measure: "net_patients", view: "bars", states: ["Illinois", "Missouri"],
           text: "Illinois provided 10,530 more abortions than its own residents obtained, while Missouri provided 11,540 fewer. The data does not track individual patients, but the two states are neighbors." },
-        { title: "Less access, lower rates", measure: "rate_residence", view: "scatter", x: "women_no_clinic_pct", y: "rate_residence",
+        { title: "Less access, lower rates", why: "This rate counts residents wherever they obtained care, including in other states. So lower rates in states with fewer clinics suggest that some residents may not have obtained care at all, not just that they went elsewhere. The data cannot show the reason, and differences in demand or state policy could also play a role.", measure: "rate_residence", view: "scatter", x: "women_no_clinic_pct", y: "rate_residence",
           xLabel: "% of women in a county without a clinic", yLabel: "Abortions per 1,000 women (by residence)",
           states: ["Wyoming", "New Jersey"],
           text: "States with fewer nearby clinics also had lower abortion rates among their residents. Wyoming had a rate of 6.4 per 1,000 women, compared with 28.9 in New Jersey." },
-        { title: "Explore on your own", measure: null, view: "bars", states: [],
+        { title: "Explore on your own", why: "Look up your own state and compare it with its neighbors. The same state can look very different depending on whether you measure counts, rates, clinic access, or travel.", measure: null, view: "bars", states: [],
           text: "Choose any measure below to compare all 50 states and D.C. Hover over a state for its values, and click to keep it highlighted." }
     ];
     let step = 0;
@@ -341,6 +341,7 @@ Promise.all([
         d3.select("#story-step").text(`Step ${i + 1} of ${STEPS.length}`);
         d3.select("#story-title").text(st.title);
         d3.select("#story-text").text(st.text);
+        d3.select("#story-why").html("<strong>Why it matters:</strong> " + st.why);
         d3.select("#story-back").property("disabled", i === 0);
         d3.select("#story-next").property("disabled", i === STEPS.length - 1);
         d3.select("#story-dots").selectAll("span").classed("active", (d, j) => j === i);
